@@ -4,7 +4,6 @@ function attach_multiselect_detection_events(optionElems,selectElems,callback){
 	var opts = optionElems || document.getElementsByTagName('option');
 	var selects = selectElems || document.getElementsByTagName('select');
 
-
 	var give_focus = function(){ this.focus(); };
 
 	var handle_ctrl_keypress = function(event){
@@ -18,12 +17,19 @@ function attach_multiselect_detection_events(optionElems,selectElems,callback){
 		}
 	};
 
+	var exists = function(item,dataset){
+		return ( dataset[item] ? true : false );
+	};
+
 	var add_remove_selected = function(){
 		var child = this;
 		var parentID = this.parentNode.id;
 		var val = child.value;
 
-		if( !formSelects[parentID]){
+		var select = document.getElementById(parentID);
+		var optIndex = select.selectedIndex;
+
+		if( !formSelects[parentID] ){
 			formSelects[parentID] = { selected : {} };
 			formSelects[parentID].selected[val] = 1;
 		} else {
@@ -42,12 +48,34 @@ function attach_multiselect_detection_events(optionElems,selectElems,callback){
 		callback();
 	};
 
-	var exists = function(item,dataset){
-		return (dataset[item] ? true : false );
+	var discover_adjacent_selected = function(){
+		var	adjacentSelected = [];
+		var i = startIndex,
+			j = startIndex;
+
+		var child = this;
+		var parentID = this.parentNode.id;
+		var val = child.value;
+
+		var select = document.getElementById(parentID);
+		var optIndex = select.selectedIndex;
+
+		// FIXME: save and return indices of selected elements in addition to values
+		while( selectElem.options[i].selected){
+			adjacentSelected.push(selectElem.options[i].value);
+			++i;
+		}
+
+		while(selectElem.options[j].selected){
+			adjacentSelected.push(selectElem.options[i].value);
+			--j;
+		}
+		return adjacentSelected;
 	};
 
 	for(var i = 0, numOpts = opts.length; i < numOpts; ++i){
 		opts[i].onclick = add_remove_selected;
+		opts[i].onmouseup = discover_adjacent_selected;
 	}
 
 	for(var j = 0, numSelects = selects.length; j < numSelects; ++j){
@@ -70,4 +98,3 @@ var allOpts =  document.getElementsByTagName('option');
 var allSelects = document.getElementsByTagName('select');
 
 attach_multiselect_detection_events(allOpts,allSelects,test_events);
-
