@@ -1,11 +1,8 @@
-attach_multiselect_detection_events();
-
-// FIXME: change signiture to accept opts/selects as params
-function attach_multiselect_detection_events(elems){
+function attach_multiselect_detection_events(optionElems,selectElems,callback){
 	window.formSelects = {};
 
-	var opts = document.getElementsByTagName('option');
-	var selects = document.getElementsByTagName('select');
+	var opts = optionElems || document.getElementsByTagName('option');
+	var selects = selectElems || document.getElementsByTagName('select');
 
 
 	var give_focus = function(){ this.focus(); };
@@ -42,7 +39,7 @@ function attach_multiselect_detection_events(elems){
 				formSelects[parentID].selected[val] = 1;
 			}
 		}
-		test_events();
+		callback();
 	};
 
 	var exists = function(item,dataset){
@@ -68,3 +65,9 @@ function test_events(){
 		}
 	}
 }
+
+var allOpts =  document.getElementsByTagName('option');
+var allSelects = document.getElementsByTagName('select');
+
+attach_multiselect_detection_events(allOpts,allSelects,test_events);
+
