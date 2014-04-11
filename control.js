@@ -33,14 +33,16 @@ function attach_multiselect_detection_events(elems){
 			if( formSelects.ctrlKey === true ){
 				if( exists(val,formSelects[parentID].selected) ){
 					delete formSelects[parentID].selected[val];
+				}else{
+					formSelects[parentID].selected[val] = 1;
 				}
 			} else if( !formSelects.ctrlKey || formSelects.ctrlKey === false ){
 				delete formSelects[parentID];
 				formSelects[parentID] = { selected : {} };
 				formSelects[parentID].selected[val] = 1;
 			}
-
 		}
+		test_events();
 	};
 
 	var exists = function(item,dataset){
@@ -58,3 +60,11 @@ function attach_multiselect_detection_events(elems){
 	}
 }
 
+function test_events(){
+	var parents = Object.keys(formSelects);
+	for(var i = 0, numParents = parents.length; i < numParents; ++i){
+		if(parents[i] !== 'ctrlKey'){
+			console.log( parents[i] + " " + JSON.stringify( formSelects[parents[i]].selected,null,'\t' ) );
+		}
+	}
+}
