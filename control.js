@@ -21,61 +21,62 @@ function attach_multiselect_detection_events(optionElems,selectElems,callback){
 		return ( dataset[item] ? true : false );
 	};
 
-	var add_remove_selected = function(){
-		var child = this;
-		var parentID = this.parentNode.id;
-		var val = child.value;
-
-		var select = document.getElementById(parentID);
-		var optIndex = select.selectedIndex;
-
-		if( !formSelects[parentID] ){
-			formSelects[parentID] = { selected : {} };
-			formSelects[parentID].selected[val] = 1;
-		} else {
-			if( formSelects.ctrlKey === true ){
-				if( exists(val,formSelects[parentID].selected) ){
-					delete formSelects[parentID].selected[val];
-				}else{
-					formSelects[parentID].selected[val] = 1;
-				}
-			} else if( !formSelects.ctrlKey || formSelects.ctrlKey === false ){
-				delete formSelects[parentID];
-				formSelects[parentID] = { selected : {} };
-				formSelects[parentID].selected[val] = 1;
-			}
-		}
-		callback();
-	};
-
-	var discover_adjacent_selected = function(){
-		var	adjacentSelected = [];
-		var i = startIndex,
+	var add_remove_selected = function(event){
+		var	adjacentSelected = [],
+			i = startIndex,
 			j = startIndex;
 
-		var child = this;
-		var parentID = this.parentNode.id;
-		var val = child.value;
+		var child = this,
+			parentID = this.parentNode.id,
+			val = child.value;
 
 		var select = document.getElementById(parentID);
 		var optIndex = select.selectedIndex;
 
-		// FIXME: save and return indices of selected elements in addition to values
-		while( selectElem.options[i].selected){
-			adjacentSelected.push(selectElem.options[i].value);
-			++i;
+		if(event.type === 'click'){ 
+			handle_click(); 
+		}else{
+			var adjacent_selected = discover_adjacent_selected();
 		}
+		callback();
 
-		while(selectElem.options[j].selected){
-			adjacentSelected.push(selectElem.options[i].value);
-			--j;
-		}
-		return adjacentSelected;
+		var handle_click = function(){
+			if( !formSelects[parentID] ){
+				formSelects[parentID] = { selected : {} };
+				formSelects[parentID].selected[val] = 1;
+			} else {
+				if( formSelects.ctrlKey === true ){
+					if( exists(val,formSelects[parentID].selected) ){
+						delete formSelects[parentID].selected[val];
+					}else{
+						formSelects[parentID].selected[val] = 1;
+					}
+				} else if( !formSelects.ctrlKey || formSelects.ctrlKey === false ){
+					delete formSelects[parentID];
+					formSelects[parentID] = { selected : {} };
+					formSelects[parentID].selected[val] = 1;
+				}
+			}
+		};
+
+		var discover_adjacent_selected = function(){
+			// FIXME: save and return indices of selected elements in addition to values
+			while( selectElem.options[i].selected){
+				adjacentSelected.push(selectElem.options[i].value);
+				++i;
+			}
+
+			while(selectElem.options[j].selected){
+				adjacentSelected.push(selectElem.options[i].value);
+				--j;
+			}
+			return adjacentSelected;
+		};
 	};
 
 	for(var i = 0, numOpts = opts.length; i < numOpts; ++i){
 		opts[i].onclick = add_remove_selected;
-		opts[i].onmouseup = discover_adjacent_selected;
+		opts[i].onmouseup = add_remove_selected;
 	}
 
 	for(var j = 0, numSelects = selects.length; j < numSelects; ++j){
