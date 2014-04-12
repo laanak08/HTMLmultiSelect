@@ -44,7 +44,6 @@ function attach_multiselect_detection_events(optionElems,selectElems,callback){
 				}
 			}
 		};
-
 		
 		var discover_adjacent_selected = function(){
 			var select = document.getElementById(parentID);
