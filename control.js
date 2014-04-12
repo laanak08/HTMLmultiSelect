@@ -22,23 +22,9 @@ function attach_multiselect_detection_events(optionElems,selectElems,callback){
 	};
 
 	var add_remove_selected = function(event){
-		var	adjacentSelected = [],
-			i = startIndex,
-			j = startIndex;
-
 		var child = this,
 			parentID = this.parentNode.id,
 			val = child.value;
-
-		var select = document.getElementById(parentID);
-		var optIndex = select.selectedIndex;
-
-		if(event.type === 'click'){ 
-			handle_click(); 
-		}else{
-			var adjacent_selected = discover_adjacent_selected();
-		}
-		callback();
 
 		var handle_click = function(){
 			if( !formSelects[parentID] ){
@@ -59,19 +45,32 @@ function attach_multiselect_detection_events(optionElems,selectElems,callback){
 			}
 		};
 
+		
 		var discover_adjacent_selected = function(){
+			var select = document.getElementById(parentID);
+			var optIndex = select.selectedIndex;
+			var	adjacentSelected = [],
+				i = optIndex,
+				j = optIndex;
 			// FIXME: save and return indices of selected elements in addition to values
-			while( selectElem.options[i].selected){
-				adjacentSelected.push(selectElem.options[i].value);
+			while( select.options[i].selected){
+				adjacentSelected.push(select.options[i].value);
 				++i;
 			}
 
-			while(selectElem.options[j].selected){
-				adjacentSelected.push(selectElem.options[i].value);
+			while(select.options[j].selected){
+				adjacentSelected.push(select.options[i].value);
 				--j;
 			}
 			return adjacentSelected;
 		};
+	
+		if(event.type === 'click'){ 
+			handle_click(); 
+		}else{
+			var adjacent_selected = discover_adjacent_selected();
+		}
+		callback();
 	};
 
 	for(var i = 0, numOpts = opts.length; i < numOpts; ++i){
