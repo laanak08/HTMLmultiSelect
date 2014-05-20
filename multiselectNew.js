@@ -53,11 +53,11 @@ function multiSelectHandler(){
 			input.name = name;
 			input.value = value;
 			input.id = value+'option';
-			input.style.display = 'inline';
+			input.style.float = 'left';
 
 			var label = document.createElement('div');
 			label.innerHTML = labelText;
-			label.style.display = 'inline';
+			label.style.float = 'left';
 
 			var container = document.createElement('div');
 			if(classNames) container.classList.add(classNames);
@@ -98,7 +98,7 @@ function multiSelectHandler(){
 
 			var opts = optStrings_from_optElems(elem.options);
 			for(var key in opts){
-				var opt = multiSelect.make_option(elem.id+'opt',key,opts[key],'stripe');
+				var opt = this.make_option(elem.id+'opt',key,opts[key],'stripe');
 				div.appendChild(opt);
 			}
 
