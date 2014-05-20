@@ -1,99 +1,149 @@
-function attach_multiselect_detection_events(optionElems,selectElems,callback){
-	window.formSelects = {};
+//////////////////////////////////////////////
+// Author: Marcelle Bonterre
+// Created On: 5/20/2014
+// Purpose: This allows for the creation
+//          of HTML lists where multiple 
+//          items in the list are selectable.
+//////////////////////////////////////////////
+function multiSelectHandler(){
+	return {
+		set_click_events: function(config){
+			var elems = config.HTMLelements,
+			callback = config.callback;
 
-	var opts = optionElems || document.getElementsByTagName('option');
-	var selects = selectElems || document.getElementsByTagName('select');
+			if( ! window.multiselect ) window.multiselect = {};
+			if( ! window.multiselect.columns ) window.multiselect.columns = {};
 
-	var give_focus = function(){ this.focus(); };
+			var give_focus = function(e){ this.focus(); };
 
-	var handle_ctrl_keypress = function(event){
-		var ctrlKeyCode = 17;
-		if( event.keyCode === ctrlKeyCode){
-			if( event.type === 'keydown'){
-				formSelects.ctrlKey = true;
-			}else if( event.type === 'keyup'){
-				formSelects.ctrlKey = false;
-			}
-		}
-	};
+			var add_remove_selected = function(event){
+				var parentID = this.parentNode.parentNode.id,
+				val = this.value;
 
-	var exists = function(item,dataset){
-		return ( dataset[item] ? true : false );
-	};
+				if( ! multiselect.columns[parentID] ){
+					multiselect.columns[parentID] = { selected : {} };
+				}
 
-	var add_remove_selected = function(event){
-		var child = this,
-			parentID = this.parentNode.id,
-			val = child.value;
+				var selections = multiselect.columns[parentID].selected;
+				if( this.checked ) selections[val] = this.id;
+				else delete selections[val];
+				
+				if( callback ) callback( selections );
+			};
 
-		var handle_click = function(){
-			if( !formSelects[parentID] ){
-				formSelects[parentID] = { selected : {} };
-				formSelects[parentID].selected[val] = 1;
+			if( 'object' === typeof elems ){
+				var numElems = elems.length;
+				for( var k = 0; k < numElems; ++k ){
+					elems[k].onclick = add_remove_selected;
+					elems[k].onmouseover = give_focus;
+				}
 			} else {
-				if( formSelects.ctrlKey === true ){
-					if( exists(val,formSelects[parentID].selected) ){
-						delete formSelects[parentID].selected[val];
-					}else{
-						formSelects[parentID].selected[val] = 1;
+				elems.onclick = add_remove_selected;
+				elems.onmouseover = give_focus;
+			}
+		},
+		get_selections_from: function(column){
+			var rv = multiselect.columns[column];
+			if( rv ) return rv.selected;
+			return rv;
+		},
+		make_option: function(name,value,labelText,classNames){
+			var input = document.createElement('input');
+			input.type = 'checkbox';
+			input.name = name;
+			input.value = value;
+			input.id = value+'option';
+			input.style.display = 'inline';
+
+			var label = document.createElement('div');
+			label.innerHTML = labelText;
+			label.style.display = 'inline';
+
+			var container = document.createElement('div');
+			if(classNames) container.classList.add(classNames);
+			container.appendChild(input);
+			container.appendChild(label);
+
+			return container;
+		},
+		select: function(amt,column){
+			var col = multiselect.columns[column];
+			if('none' === amt){
+				if( col ){
+					var selections = col.selected;
+					for( var key in selections ){
+						var id = selections[key];
+						document.getElementById(id).checked = false;
+						delete selections[key];
 					}
-				} else if( !formSelects.ctrlKey || formSelects.ctrlKey === false ){
-					delete formSelects[parentID];
-					formSelects[parentID] = { selected : {} };
-					formSelects[parentID].selected[val] = 1;
 				}
 			}
-		};
-		
-		var discover_adjacent_selected = function(){
-			var select = document.getElementById(parentID);
-			var optIndex = select.selectedIndex;
-			var	adjacentSelected = [],
-				i = optIndex,
-				j = optIndex;
-			// FIXME: save and return indices of selected elements in addition to values
-			while( select.options[i].selected){
-				adjacentSelected.push(select.options[i].value);
-				++i;
+		},
+		convert_select_to_checkbox: function(elem){
+			var div = document.createElement('div');
+			div.id = 'tmp'+elem.id;
+			div.style.overflow = 'scroll';
+
+			var optStrings_from_optElems = function(optElemList){
+				var optStrings = {},
+				numOpts = optElemList.length;
+				for(var i = 0; i < numOpts; ++i){
+					var value = optElemList[i].value;
+					var text = optElemList[i].innerHTML;
+
+					optStrings[value] = text;
+				}
+				return optStrings;
 			}
 
-			while(select.options[j].selected){
-				adjacentSelected.push(select.options[i].value);
-				--j;
+			var opts = optStrings_from_optElems(elem.options);
+			for(var key in opts){
+				var opt = multiSelect.make_option(elem.id+'opt',key,opts[key],'stripe');
+				div.appendChild(opt);
 			}
-			return adjacentSelected;
-		};
-	
-		if(event.type === 'click'){ 
-			handle_click(); 
-		}else{
-			var adjacent_selected = discover_adjacent_selected();
+
+			var parent = elem.parentNode;
+			parent.appendChild(div);
+			parent.removeChild(elem);
+			var replacement = document.getElementById(div.id);
+			replacement.id = replacement.id.replace(/tmp/,'');
+
+			return document.getElementById(div.id);
 		}
-		callback();
-	};
 
-	for(var i = 0, numOpts = opts.length; i < numOpts; ++i){
-		opts[i].onclick = add_remove_selected;
-		opts[i].onmouseup = add_remove_selected;
-	}
+	}; // end return
+} // end multiSelectHandler()
 
-	for(var j = 0, numSelects = selects.length; j < numSelects; ++j){
-		selects[j].onmouseover = give_focus;
-		selects[j].onkeydown = handle_ctrl_keypress;
-		selects[j].onkeyup = handle_ctrl_keypress;
-	}
-}
+// var table = document.getElementById('cdcSelect');
+// var opts = [];
+// for(var q = 0; q < 16; ++q){ opts.push('option'+q); }
 
-function test_events(){
-	var parents = Object.keys(formSelects);
-	for(var i = 0, numParents = parents.length; i < numParents; ++i){
-		if(parents[i] !== 'ctrlKey'){
-			console.log( parents[i] + " " + JSON.stringify( formSelects[parents[i]].selected,null,'\t' ) );
-		}
-	}
-}
+// for(var i = 0, numOpts = opts.length; i < numOpts; ++i ){
+// 	var opt = document.createElement('option');
+// 	opt.value = opts[i];
+// 	opt.innerHTML = opts[i];
+// 	table.appendChild(opt);
+// }
 
-var allOpts =  document.getElementsByTagName('option');
-var allSelects = document.getElementsByTagName('select');
+// // multiselect usage
+// var multiSelect = multiSelectHandler();
 
-attach_multiselect_detection_events(allOpts,allSelects,test_events);
+// table = multiSelect.convert_select_to_checkbox(table);
+
+// for(var i = 0, numOpts = opts.length; i < numOpts; ++i ){
+// 	var opt = multiSelect.make_option(table.id+'opt',opts[i],opts[i],'stripe');
+// 	table.appendChild(opt);
+// }
+
+// var input = document.createElement('input');
+// input.type = 'button';
+// input.value = 'clear';
+// input.onclick = function(evt){ multiSelect.select('none','cdcSelect'); };
+// document.getElementById('mid').appendChild(input);
+
+// var elems = document.getElementsByName('cdcSelectopt');
+// multiSelect.set_click_events({
+// 	HTMLelements : elems,
+// 	callback : function(selections){ console.log( JSON.stringify(selections) ); }
+// });
+// //end multiselect usage
