@@ -68,15 +68,28 @@ function multiSelectHandler(){
 		},
 		select: function(amt,column){
 			var col = multiselect.columns[column];
-			if('none' === amt){
-				if( col ){
-					var selections = col.selected;
+			if( col ){
+				var selections = col.selected;
+				if('none' === amt){
 					for( var key in selections ){
 						var id = selections[key];
 						document.getElementById(id).checked = false;
 						delete selections[key];
 					}
+				} else if( 'all' === amt ){
+
+				} else {
+					var item = amt,
+						id = item+'option';
+					selections[item] = id;
+					document.getElementById(id).checked = true;
 				}
+			}
+		},
+		empty: function(column){
+			var elem = document.getElementById(column);
+			while (elem.firstChild) {
+			  elem.removeChild(elem.firstChild);
 			}
 		},
 		convert_select_to_checkbox: function(elem){
