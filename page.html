@@ -1,46 +1,58 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
-	<style type="text/css">
-		body {
-			width: 10%;
-			margin: 0 auto;
+	<head>
+		<style>
+			#cdcSelect {
+				overflow: scroll;
+				height: 200px;
+				width: 150px;
+			}
+
+			.stripe:nth-of-type(odd) {
+				background-color: #CCFFFF;
+			}
+		</style>
+		<script src="./multiselectNew.js"></script>
+	</head>
+	<body>
+	<div id='mid'>
+		<!-- <div id="cdcSelect"></div> -->
+		<select id="cdcSelect"></select>
+	</div>
+	<script>
+		var table = document.getElementById('cdcSelect');
+		var opts = [];
+		for(var q = 0; q < 16; ++q){ opts.push('option'+q); }
+
+		for(var i = 0, numOpts = opts.length; i < numOpts; ++i ){
+			var opt = document.createElement('option');
+			opt.value = opts[i];
+			opt.innerHTML = opts[i];
+			table.appendChild(opt);
 		}
 
-		select {
-			height: 100px;
-			width: 50px;
-		}
+		// multiselect usage
+		var multiSelect = multiSelectHandler();
 
-		#left {
-			float: left;
-		}
+		table = multiSelect.convert_select_to_checkbox(table);
+		
+		// for(var i = 0, numOpts = opts.length; i < numOpts; ++i ){
+		// 	var opt = multiSelect.make_option(table.id+'opt',opts[i],opts[i],'stripe');
+		// 	table.appendChild(opt);
+		// }
 
-		#right {
-			float: right;
-		}
-	</style>
-</head>
-<body>
+		var input = document.createElement('input');
+		input.type = 'button';
+		input.value = 'clear';
+		input.onclick = function(evt){ multiSelect.select('none','cdcSelect'); };
+		document.getElementById('mid').appendChild(input);
 
-	<select id="left" multiple="">
-		<option>opt1</option>
-		<option>opt2</option>
-		<option>opt3</option>
-		<option>opt4</option>
-		<option>opt5</option>
-		<option>opt6</option>
-	</select>
-
-	<select id="right" multiple="">
-		<option>opt1</option>
-		<option>opt2</option>
-		<option>opt3</option>
-		<option>opt4</option>
-		<option>opt5</option>
-		<option>opt6</option>
-	</select>
-
-	<script type="text/javascript" src="./control.js"></script>
-</body>
+		var elems = document.getElementsByName('cdcSelectopt');
+		multiSelect.set_click_events({
+			HTMLelements : elems,
+			callback : function(selections){ console.log( JSON.stringify(selections) ); }
+		});
+		//end multiselect usage
+	</script>
+	</body>
 </html>
