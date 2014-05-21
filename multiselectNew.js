@@ -9,7 +9,7 @@ function multiSelectHandler(){
 	return {
 		set_click_events: function(config){
 			var elems = config.HTMLelements,
-			callback = config.callback;
+				callback = config.callback;
 
 			if( ! window.multiselect ) window.multiselect = {};
 			if( ! window.multiselect.columns ) window.multiselect.columns = {};
@@ -60,6 +60,9 @@ function multiSelectHandler(){
 			label.style.float = 'left';
 
 			var container = document.createElement('div');
+			// FIXME: feature detect classList.
+			// if not present, use:
+			// if(classNames) container.classNames += ' ' + classNames;
 			if(classNames) container.classList.add(classNames);
 			container.appendChild(input);
 			container.appendChild(label);
@@ -94,7 +97,7 @@ function multiSelectHandler(){
 			  elem.removeChild(elem.firstChild);
 			}
 		},
-		convert_select_to_checkbox: function(elem){
+		convert_select_to_checkbox: function(elem,callback){
 			var div = document.createElement('div');
 			div.id = 'tmp'+elem.id;
 			div.style.overflow = 'scroll';
@@ -123,6 +126,7 @@ function multiSelectHandler(){
 			var replacement = document.getElementById(div.id);
 			replacement.id = replacement.id.replace(/tmp/,'');
 
+			if( callback ) callback( document.getElementById(div.id) );
 			return document.getElementById(div.id);
 		}
 
