@@ -1,20 +1,24 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<style>
-			#cdcSelect {
-				overflow: scroll;
-				height: 200px;
-				width: 150px;
-			}
+<head>
+	<style>
+		#cdcSelect {
+			overflow: scroll;
+			height: 200px;
+			width: 150px;
+		}
 
-			.stripe:nth-of-type(odd) {
-				background-color: #CCFFFF;
-			}
-		</style>
-		<script src="./multiselectNew.js"></script>
-	</head>
-	<body>
+		.stripe {
+			display: block;
+		}
+
+		.stripe:nth-of-type(odd) {
+			background-color: #CCFFFF;
+		}
+	</style>
+	<script src="./multiselectNew.js"></script>
+</head>
+<body>
 	<div id='mid'>
 		<!-- <div id="cdcSelect"></div> -->
 		<select id="cdcSelect"></select>
@@ -24,12 +28,12 @@
 		var opts = [];
 		for(var q = 0; q < 16; ++q){ opts.push('option'+q); }
 
-		for(var i = 0, numOpts = opts.length; i < numOpts; ++i ){
-			var opt = document.createElement('option');
-			opt.value = opts[i];
-			opt.innerHTML = opts[i];
-			table.appendChild(opt);
-		}
+			for(var i = 0, numOpts = opts.length; i < numOpts; ++i ){
+				var opt = document.createElement('option');
+				opt.value = opts[i];
+				opt.innerHTML = opts[i];
+				table.appendChild(opt);
+			}
 
 		// multiselect usage
 		var multiSelect = multiSelectHandler();
@@ -53,6 +57,19 @@
 			callback : function(selections){ console.log( JSON.stringify(selections) ); }
 		});
 		//end multiselect usage
+
+		function addClass(el, newClassName){
+			el.className += ' ' + newClassName;   
+		}
+
+		function removeClass(el, removeClassName){
+			var elClass = el.className;
+			while(elClass.indexOf(removeClassName) != -1) {
+				elClass = elClass.replace(removeClassName, '');
+				elClass = elClass.trim();
+			}
+			el.className = elClass;
+		}
 	</script>
-	</body>
+</body>
 </html>
