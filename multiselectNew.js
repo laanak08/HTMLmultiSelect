@@ -62,7 +62,7 @@ function multiSelectHandler(){
 			var container = document.createElement('div');
 			// FIXME: feature detect classList.
 			// if not present, use:
-			// if(classNames) container.classNames += ' ' + classNames;
+			// if(classNames) container.className += ' ' + classNames;
 			if(classNames) container.classList.add(classNames);
 			container.appendChild(input);
 			container.appendChild(label);
