@@ -132,37 +132,3 @@ function multiSelectHandler(){
 
 	}; // end return
 } // end multiSelectHandler()
-
-// var table = document.getElementById('cdcSelect');
-// var opts = [];
-// for(var q = 0; q < 16; ++q){ opts.push('option'+q); }
-
-// for(var i = 0, numOpts = opts.length; i < numOpts; ++i ){
-// 	var opt = document.createElement('option');
-// 	opt.value = opts[i];
-// 	opt.innerHTML = opts[i];
-// 	table.appendChild(opt);
-// }
-
-// // multiselect usage
-// var multiSelect = multiSelectHandler();
-
-// table = multiSelect.convert_select_to_checkbox(table);
-
-// for(var i = 0, numOpts = opts.length; i < numOpts; ++i ){
-// 	var opt = multiSelect.make_option(table.id+'opt',opts[i],opts[i],'stripe');
-// 	table.appendChild(opt);
-// }
-
-// var input = document.createElement('input');
-// input.type = 'button';
-// input.value = 'clear';
-// input.onclick = function(evt){ multiSelect.select('none','cdcSelect'); };
-// document.getElementById('mid').appendChild(input);
-
-// var elems = document.getElementsByName('cdcSelectopt');
-// multiSelect.set_click_events({
-// 	HTMLelements : elems,
-// 	callback : function(selections){ console.log( JSON.stringify(selections) ); }
-// });
-// //end multiselect usage
