@@ -21,7 +21,7 @@ function multiSelectHandler(){
 				val = this.value;
 
 				if( ! multiselect.columns[parentID] ){
-					multiselect.columns[parentID] = { selected : {} };
+					multiselect.columns[parentID] = { selected : {}, contents: {} };
 				}
 
 				var selections = multiselect.columns[parentID].selected;
@@ -47,35 +47,63 @@ function multiSelectHandler(){
 			if( rv ) return rv.selected;
 			return rv;
 		},
-		make_option: function(name,value,labelText,classNames){
+		make_option: function(name,value,labelText,classNames,callback){
 			var input = document.createElement('input');
 			input.type = 'checkbox';
 			input.name = name;
 			input.value = value;
 			input.id = value+'option';
 			input.style.float = 'left';
+			
+            var container = document.createElement('div');
+            // FIXME: feature detect classList.
+            // if not present, use:
+            // if(classNames) container.className += ' ' + classNames;
+            if(classNames) container.classList.add(classNames);
+            container.appendChild(input);
+            container.appendChild(document.createTextNode(labelText));
 
-			var label = document.createElement('div');
-			label.innerHTML = labelText;
-			label.style.float = 'left';
+            var optionObj = {
+            	name: name,
+            	value: value,
+            	label: labelText,
+            	id: value+'option',
+            	HTML: container
+            };
 
-			var container = document.createElement('div');
-			// FIXME: feature detect classList.
-			// if not present, use:
-			// if(classNames) container.className += ' ' + classNames;
-			if(classNames) container.classList.add(classNames);
-			container.appendChild(input);
-			container.appendChild(label);
+            if( callback ) callback(optionObj);
+			return optionObj.HTML;
+			// return container;
+		},
+		append: function(option,column){
+			var key = option.value || option;
+			if( ! 'object' === typeof column ) column = document.getElementById(column);
+			if( ! multiselect.columns[column.id] ) {
+				multiselect.columns[column.id] = { selected : {}, contents: {} };
+			}
 
-			return container;
+			if( ! multiselect.columns[column.id].contents[key] ){
+				multiselect.columns[column.id].contents[key] = option;
+				column.appendChild(option.HTML);
+			}
+		},
+		empty: function(column){
+			var col = multiselect.columns[column];
+			if( col ) delete multiselect.columns[column];
+
+			var elem = document.getElementById(column);
+			while (elem.firstChild) {
+				elem.removeChild(elem.firstChild);
+			}
 		},
 		select: function(amt,column){
 			var col = multiselect.columns[column];
+			var selections, id;
 			if('none' === amt){
 				if( col ){
-					var selections = col.selected;
+					selections = col.selected;
 					for( var key in selections ){
-						var id = selections[key];
+						id = selections[key];
 						document.getElementById(id).checked = false;
 						delete selections[key];
 					}
@@ -83,18 +111,12 @@ function multiSelectHandler(){
 			} else if( 'all' === amt ){
 
 			} else {
-				if( ! col ) col = multiselect.columns[column] = { selected : {} };
-				var selections = col.selected,
-					item = amt,
-					id = item+'option';
+				if( ! col ) col = multiselect.columns[column] = { selected : {}, contents: {} };
+				selections = col.selected;
+				var item = amt;
+				id = item+'option';
 				selections[item] = id;
 				document.getElementById(id).checked = true;
-			}
-		},
-		empty: function(column){
-			var elem = document.getElementById(column);
-			while (elem.firstChild) {
-			  elem.removeChild(elem.firstChild);
 			}
 		},
 		convert_select_to_checkbox: function(elem,callback){
@@ -112,7 +134,7 @@ function multiSelectHandler(){
 					optStrings[value] = text;
 				}
 				return optStrings;
-			}
+			};
 
 			var opts = optStrings_from_optElems(elem.options);
 			for(var key in opts){
