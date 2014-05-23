@@ -47,6 +47,11 @@ function multiSelectHandler(){
 			if( rv ) return rv.selected;
 			return rv;
 		},
+		get_contents: function(column){
+			var rv = multiselect.columns[column];
+			if( rv ) return rv.contents;
+			return rv;
+		},		
 		make_option: function(name,value,labelText,classNames,callback){
 			var input = document.createElement('input');
 			input.type = 'checkbox';
