@@ -9,7 +9,7 @@ function multiSelectHandler(){
 	return {
 		set_click_events: function(config){
 			var elems = config.HTMLelements,
-				callback = config.callback;
+			callback = config.callback;
 
 			if( ! window.multiselect ) window.multiselect = {};
 			if( ! window.multiselect.columns ) window.multiselect.columns = {};
@@ -55,7 +55,7 @@ function multiSelectHandler(){
 			input.id = value+'option';
 			input.style.float = 'left';
 			
-            var container = document.createElement('div');
+			var container = document.createElement('div');
             // FIXME: feature detect classList.
             // if not present, use:
             // if(classNames) container.className += ' ' + classNames;
@@ -72,7 +72,7 @@ function multiSelectHandler(){
             };
 
             if( callback ) callback(optionObj);
-			return optionObj.HTML;
+            return optionObj.HTML;
 			// return container;
 		},
 		append: function(option,column){
