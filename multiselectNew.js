@@ -56,23 +56,23 @@ function multiSelectHandler(){
 			input.style.float = 'left';
 			
 			var container = document.createElement('div');
-            // FIXME: feature detect classList.
-            // if not present, use:
-            // if(classNames) container.className += ' ' + classNames;
-            if(classNames) container.classList.add(classNames);
-            container.appendChild(input);
-            container.appendChild(document.createTextNode(labelText));
+			// FIXME: feature detect classList.
+			// if not present, use:
+			// if(classNames) container.className += ' ' + classNames;
+			if(classNames) container.classList.add(classNames);
+			container.appendChild(input);
+			container.appendChild(document.createTextNode(labelText));
 
-            var optionObj = {
-            	name: name,
-            	value: value,
-            	label: labelText,
-            	id: value+'option',
-            	HTML: container
-            };
+			var optionObj = {
+				name: name,
+				value: value,
+				label: labelText,
+				id: value+'option',
+				HTML: container
+			};
 
-            if( callback ) callback(optionObj);
-            return optionObj.HTML;
+			if( callback ) callback(optionObj);
+			return optionObj.HTML;
 			// return container;
 		},
 		append: function(option,column){
