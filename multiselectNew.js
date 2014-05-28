@@ -43,14 +43,12 @@ function multiSelectHandler(){
 			}
 		},
 		get_selections_from: function(column){
-			var rv = multiselect.columns[column];
-			if( rv ) return rv.selected;
+			var rv = multiselect.columns[column].selected || multiselect.columns[column];
 			return rv;
 		},
 		get_contents: function(column){
-			var rv = multiselect.columns[column];
-			if( rv ) return rv.contents;
-			return rv;
+			var rv = multiselect.columns[column].contents || multiselect.columns[column];
+			return rv;			
 		},		
 		make_option: function(name,value,labelText,classNames,callback){
 			var input = document.createElement('input');
